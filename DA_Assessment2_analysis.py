@@ -55,3 +55,33 @@ results["n_rows"] = int(df.shape[0])
 results["n_cols"] = int(df.shape[1])
 results["missing_values"] = int(df.isnull().sum().sum())
 results["duplicate_rows"] = int(df.duplicated().sum())
+
+
+# ---------------------------------------------------------------------------
+# 2. EXPLORATORY DATA ANALYSIS
+# ---------------------------------------------------------------------------
+numeric_cols = ["Age", "App Sessions", "Distance Travelled (km)", "Calories Burned"]
+
+desc = df[numeric_cols].describe().round(2)
+desc.to_csv("eda_describe.csv")
+
+corr = df[numeric_cols].corr().round(3)
+corr.to_csv("eda_correlation.csv")
+results["correlation_matrix"] = corr.to_dict()
+
+group_activity = df.groupby("Activity Level")[numeric_cols].mean().round(2)
+group_activity.to_csv("eda_group_activity.csv")
+
+group_gender = df.groupby("Gender")[numeric_cols].mean().round(2)
+group_gender.to_csv("eda_group_gender.csv")
+
+group_location = df.groupby("Location")[numeric_cols].mean().round(2)
+group_location.to_csv("eda_group_location.csv")
+
+# --- Chart 1: correlation heatmap ---
+plt.figure(figsize=(6, 5))
+sns.heatmap(corr, annot=True, cmap="viridis", vmin=-1, vmax=1, fmt=".2f")
+plt.title("Correlation Heatmap of Numeric Features")
+plt.tight_layout()
+plt.savefig("Exploratory_Data_Analysis_Charts/chart_correlation_heatmap.png", dpi=150)
+plt.close()
