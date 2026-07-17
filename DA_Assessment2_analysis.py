@@ -85,3 +85,12 @@ plt.title("Correlation Heatmap of Numeric Features")
 plt.tight_layout()
 plt.savefig("Exploratory_Data_Analysis_Charts/chart_correlation_heatmap.png", dpi=150)
 plt.close()
+
+# --- Chart 2: distribution of key numeric variables ---
+fig, axes = plt.subplots(2, 2, figsize=(10, 7))
+for ax, col in zip(axes.flat, numeric_cols):
+    sns.histplot(df[col], kde=True, ax=ax, color="#3b6fa0")
+    ax.set_title(f"Distribution of {col}")
+plt.tight_layout()
+plt.savefig("Exploratory_Data_Analysis_Charts/chart_distributions.png", dpi=150)
+plt.close()
