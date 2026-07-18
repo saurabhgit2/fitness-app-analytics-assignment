@@ -303,3 +303,14 @@ plt.xticks(rotation=0)
 plt.tight_layout()
 plt.savefig("K-Means/chart_cluster_profile.png", dpi=150)
 plt.close()
+
+# ---------------------------------------------------------------------------
+# SAVE ALL RESULTS
+# ---------------------------------------------------------------------------
+with open("results.json", "w") as f:
+    json.dump(results, f, indent=2, default=str)
+
+df.to_csv("dataset_with_clusters.csv", index=False)
+
+print("Analysis complete. Results written to results.json")
+print(json.dumps(results, indent=2, default=str))
