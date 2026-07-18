@@ -283,3 +283,23 @@ results["clustering"] = {
     "cluster_profile": cluster_profile.to_dict(orient="index"),
 }
 
+# --- Chart 8: cluster visualisation ---
+plt.figure(figsize=(7, 5.5))
+sns.scatterplot(
+    data=df, x="App Sessions", y="Calories Burned",
+    hue="Cluster", palette="viridis", alpha=0.6, s=22
+)
+plt.title(f"User Segments from K-Means Clustering (k={optimal_k}, silhouette={final_sil:.3f})")
+plt.tight_layout()
+plt.savefig("K-Means/chart_clusters.png", dpi=150)
+plt.close()
+
+# --- Chart 9: cluster profile bar chart ---
+plt.figure(figsize=(8, 5))
+cluster_profile[cluster_features].plot(kind="bar", ax=plt.gca())
+plt.title("Average Metrics per User Segment")
+plt.ylabel("Average Value")
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.savefig("K-Means/chart_cluster_profile.png", dpi=150)
+plt.close()
