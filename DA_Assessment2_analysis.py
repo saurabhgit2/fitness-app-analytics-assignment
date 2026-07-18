@@ -94,3 +94,60 @@ for ax, col in zip(axes.flat, numeric_cols):
 plt.tight_layout()
 plt.savefig("Exploratory_Data_Analysis_Charts/chart_distributions.png", dpi=150)
 plt.close()
+
+# --- Chart 3: App Sessions vs Calories Burned by Activity Level ---
+plt.figure(figsize=(7, 5))
+sns.scatterplot(
+    data=df, x="App Sessions", y="Calories Burned",
+    hue="Activity Level", alpha=0.5, s=20
+)
+plt.title("App Sessions vs Calories Burned by Activity Level")
+plt.tight_layout()
+plt.savefig("Exploratory_Data_Analysis_Charts/chart_sessions_vs_calories.png", dpi=150)
+plt.close()
+
+# --- Chart 4: engagement by demographic group ---
+fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
+group_activity["App Sessions"].plot(kind="bar", ax=axes[0], color="#3b6fa0")
+axes[0].set_title("Avg. App Sessions by Activity Level")
+axes[0].set_ylabel("App Sessions")
+group_gender["App Sessions"].plot(kind="bar", ax=axes[1], color="#5a9367")
+axes[1].set_title("Avg. App Sessions by Gender")
+group_location["App Sessions"].plot(kind="bar", ax=axes[2], color="#b0703b")
+axes[2].set_title("Avg. App Sessions by Location")
+for ax in axes:
+    ax.tick_params(axis="x", rotation=0)
+plt.tight_layout()
+plt.savefig("Exploratory_Data_Analysis_Charts/chart_engagement_by_group.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------------------------
+# 3. LINEAR REGRESSION - Predicting Calories Burned
+#    (predictors: App Sessions, Distance Travelled, Age, Gender, Location)
+# ---------------------------------------------------------------------------
+reg_df = df.copy()
+reg_df = pd.get_dummies(reg_df, columns=["Gender", "Location"], drop_first=True)
+
+feature_cols_reg = [
+    "App Sessions", "Distance Travelled (km)", "Age",
+    "Gender_Male", "Location_Suburban", "Location_Urban",
+]
+X_reg = reg_df[feature_cols_reg]
+y_reg = reg_df["Calories Burned"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_reg, y_reg, test_size=0.2, random_state=RANDOM_STATE
+)
+
+lin_model = LinearRegression()
+lin_model.fit(X_train, y_train)
+y_pred = lin_model.predict(X_test)
+
+reg_metrics = {
+    "r2_score": round(r2_score(y_test, y_pred), 4),
+    "rmse": round(mean_squared_error(y_test, y_pred) ** 0.5, 2),
+    "mae": round(mean_absolute_error(y_test, y_pred), 2),
+    "coefficients": dict(zip(feature_cols_reg, np.round(lin_model.coef_, 3))),
+    "intercept": round(float(lin_model.intercept_), 3),
+}
+results["regression"] = reg_metrics
