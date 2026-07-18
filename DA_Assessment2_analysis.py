@@ -151,3 +151,78 @@ reg_metrics = {
     "intercept": round(float(lin_model.intercept_), 3),
 }
 results["regression"] = reg_metrics
+
+# --- Chart 5: actual vs predicted ---
+plt.figure(figsize=(6, 6))
+plt.scatter(y_test, y_pred, alpha=0.4, s=18, color="#3b6fa0")
+lims = [min(y_test.min(), y_pred.min()), max(y_test.max(), y_pred.max())]
+plt.plot(lims, lims, "r--", lw=1.5)
+plt.xlabel("Actual Calories Burned")
+plt.ylabel("Predicted Calories Burned")
+plt.title(f"Linear Regression: Actual vs Predicted (R2 = {reg_metrics['r2_score']})")
+plt.tight_layout()
+plt.savefig("Linear_Regression_Chart/chart_regression_actual_vs_pred.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------------------------
+# 4. CLASSIFICATION - Predicting Activity Level
+#    (Logistic Regression + Random Forest, compared)
+# ---------------------------------------------------------------------------
+clf_df = df.copy()
+le = LabelEncoder()
+clf_df["Activity_Level_Enc"] = le.fit_transform(clf_df["Activity Level"])
+clf_df = pd.get_dummies(clf_df, columns=["Gender", "Location"], drop_first=True)
+
+feature_cols_clf = [
+    "App Sessions", "Distance Travelled (km)", "Calories Burned", "Age",
+    "Gender_Male", "Location_Suburban", "Location_Urban",
+]
+X_clf = clf_df[feature_cols_clf]
+y_clf = clf_df["Activity_Level_Enc"]
+
+Xc_train, Xc_test, yc_train, yc_test = train_test_split(
+    X_clf, y_clf, test_size=0.2, random_state=RANDOM_STATE, stratify=y_clf
+)
+
+scaler = StandardScaler()
+Xc_train_s = scaler.fit_transform(Xc_train)
+Xc_test_s = scaler.transform(Xc_test)
+
+# Logistic Regression
+logreg = LogisticRegression(max_iter=1000)
+logreg.fit(Xc_train_s, yc_train)
+yc_pred_lr = logreg.predict(Xc_test_s)
+
+# Random Forest
+rf = RandomForestClassifier(n_estimators=200, random_state=RANDOM_STATE)
+rf.fit(Xc_train, yc_train)
+yc_pred_rf = rf.predict(Xc_test)
+
+def clf_metrics(y_true, y_pred, label):
+    prec, rec, f1, _ = precision_recall_fscore_support(y_true, y_pred, average="macro")
+    return {
+        "model": label,
+        "accuracy": round(accuracy_score(y_true, y_pred), 4),
+        "precision_macro": round(prec, 4),
+        "recall_macro": round(rec, 4),
+        "f1_macro": round(f1, 4),
+    }
+
+results["classification"] = {
+    "logistic_regression": clf_metrics(yc_test, yc_pred_lr, "Logistic Regression"),
+    "random_forest": clf_metrics(yc_test, yc_pred_rf, "Random Forest"),
+    "classes": list(le.classes_),
+}
+
+# --- Chart 6: confusion matrix for the better model (Random Forest) ---
+cm = confusion_matrix(yc_test, yc_pred_rf)
+plt.figure(figsize=(5.5, 4.5))
+sns.heatmap(cm, annot=True, fmt="d", cmap="viridis",
+            xticklabels=le.classes_, yticklabels=le.classes_)
+plt.xlabel("Predicted Activity Level")
+plt.ylabel("Actual Activity Level")
+plt.title("Random Forest Confusion Matrix")
+plt.tight_layout()
+plt.savefig("Classification/chart_confusion_matrix.png", dpi=150)
+plt.close()
+
