@@ -236,4 +236,50 @@ plt.tight_layout()
 plt.savefig("Classification/chart_feature_importance.png", dpi=150)
 plt.close()
 
+# ---------------------------------------------------------------------------
+# 5. K-MEANS CLUSTERING - User Segmentation
+# ---------------------------------------------------------------------------
+cluster_features = ["App Sessions", "Distance Travelled (km)", "Calories Burned"]
+X_cluster = df[cluster_features]
+X_cluster_scaled = StandardScaler().fit_transform(X_cluster)
+
+# Elbow method
+inertias = []
+sil_scores = []
+K_range = range(2, 8)
+for k in K_range:
+    km = KMeans(n_clusters=k, random_state=RANDOM_STATE, n_init=10)
+    labels_k = km.fit_predict(X_cluster_scaled)
+    inertias.append(km.inertia_)
+    sil_scores.append(silhouette_score(X_cluster_scaled, labels_k))
+
+plt.figure(figsize=(11, 4.5))
+plt.subplot(1, 2, 1)
+plt.plot(list(K_range), inertias, marker="o", color="#3b6fa0")
+plt.xlabel("Number of Clusters (k)")
+plt.ylabel("Inertia")
+plt.title("Elbow Method")
+plt.subplot(1, 2, 2)
+plt.plot(list(K_range), sil_scores, marker="o", color="#b0703b")
+plt.xlabel("Number of Clusters (k)")
+plt.ylabel("Silhouette Score")
+plt.title("Silhouette Score by k")
+plt.tight_layout()
+plt.savefig("K-Means/chart_cluster_selection.png", dpi=150)
+plt.close()
+
+optimal_k = 3  # chosen from elbow + silhouette + interpretability
+kmeans_final = KMeans(n_clusters=optimal_k, random_state=RANDOM_STATE, n_init=10)
+df["Cluster"] = kmeans_final.fit_predict(X_cluster_scaled)
+final_sil = silhouette_score(X_cluster_scaled, df["Cluster"])
+
+cluster_profile = df.groupby("Cluster")[cluster_features + ["Age"]].mean().round(1)
+cluster_profile["Count"] = df["Cluster"].value_counts().sort_index()
+cluster_profile.to_csv("cluster_profile.csv")
+
+results["clustering"] = {
+    "optimal_k": optimal_k,
+    "silhouette_score": round(final_sil, 4),
+    "cluster_profile": cluster_profile.to_dict(orient="index"),
+}
 
