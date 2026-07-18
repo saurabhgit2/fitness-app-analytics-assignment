@@ -1,0 +1,94 @@
+{
+  "n_rows": 5000,
+  "n_cols": 8,
+  "missing_values": 0,
+  "duplicate_rows": 0,
+  "correlation_matrix": {
+    "Age": {
+      "Age": 1.0,
+      "App Sessions": -0.002,
+      "Distance Travelled (km)": -0.004,
+      "Calories Burned": -0.004
+    },
+    "App Sessions": {
+      "Age": -0.002,
+      "App Sessions": 1.0,
+      "Distance Travelled (km)": 0.857,
+      "Calories Burned": 0.795
+    },
+    "Distance Travelled (km)": {
+      "Age": -0.004,
+      "App Sessions": 0.857,
+      "Distance Travelled (km)": 1.0,
+      "Calories Burned": 0.681
+    },
+    "Calories Burned": {
+      "Age": -0.004,
+      "App Sessions": 0.795,
+      "Distance Travelled (km)": 0.681,
+      "Calories Burned": 1.0
+    }
+  },
+  "regression": {
+    "r2_score": 0.6382,
+    "rmse": 114.24,
+    "mae": 93.21,
+    "coefficients": {
+      "App Sessions": 3.519,
+      "Distance Travelled (km)": -0.045,
+      "Age": 0.053,
+      "Gender_Male": -1.114,
+      "Location_Suburban": -6.405,
+      "Location_Urban": -7.611
+    },
+    "intercept": 2.283
+  },
+  "classification": {
+    "logistic_regression": {
+      "model": "Logistic Regression",
+      "accuracy": 0.988,
+      "precision_macro": 0.9885,
+      "recall_macro": 0.9879,
+      "f1_macro": 0.9881
+    },
+    "random_forest": {
+      "model": "Random Forest",
+      "accuracy": 1.0,
+      "precision_macro": 1.0,
+      "recall_macro": 1.0,
+      "f1_macro": 1.0
+    },
+    "classes": [
+      "Active",
+      "Moderate",
+      "Sedentary"
+    ]
+  },
+  "clustering": {
+    "optimal_k": 3,
+    "silhouette_score": 0.398,
+    "cluster_profile": {
+      "0": {
+        "App Sessions": 76.7,
+        "Distance Travelled (km)": 55.3,
+        "Calories Burned": 253.6,
+        "Age": 38.3,
+        "Count": 1706
+      },
+      "1": {
+        "App Sessions": 129.0,
+        "Distance Travelled (km)": 94.2,
+        "Calories Burned": 429.7,
+        "Age": 38.7,
+        "Count": 1820
+      },
+      "2": {
+        "App Sessions": 173.8,
+        "Distance Travelled (km)": 133.7,
+        "Calories Burned": 642.3,
+        "Age": 38.3,
+        "Count": 1474
+      }
+    }
+  }
+}
