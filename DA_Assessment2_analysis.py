@@ -226,3 +226,14 @@ plt.tight_layout()
 plt.savefig("Classification/chart_confusion_matrix.png", dpi=150)
 plt.close()
 
+# --- Chart 7: feature importance (Random Forest) ---
+importances = pd.Series(rf.feature_importances_, index=feature_cols_clf).sort_values()
+plt.figure(figsize=(7, 4.5))
+importances.plot(kind="barh", color="#3b6fa0")
+plt.title("Random Forest Feature Importance (Activity Level Prediction)")
+plt.xlabel("Importance")
+plt.tight_layout()
+plt.savefig("Classification/chart_feature_importance.png", dpi=150)
+plt.close()
+
+
